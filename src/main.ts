@@ -4,7 +4,7 @@ import * as audio from './audio';
 import { renderExplore } from './explore';
 import { renderQuiz } from './quiz';
 import { isSilly, onSettingsChange } from './settings';
-import { h, langSwitcher, sillyToggle, t } from './ui';
+import { h, langSwitcher, modeSwitcher, sillyToggle, t } from './ui';
 
 registerSW({ immediate: true });
 
@@ -33,7 +33,7 @@ function renderHeader(route: Route): void {
     );
   header.replaceChildren(
     h('nav', { class: 'tabs' }, tab('explore', '🧸', t('explore')), tab('quiz', '🎯', t('quiz'))),
-    h('div', { class: 'controls' }, langSwitcher(), sillyToggle()),
+    h('div', { class: 'controls' }, langSwitcher(), modeSwitcher(), sillyToggle()),
   );
 }
 

@@ -85,6 +85,20 @@ export function setLevel(next: LevelChoice): void {
   emit();
 }
 
+// ---------- what a tap plays: the word's name or its sound ----------
+export type Mode = 'name' | 'sound';
+const MODE_KEY = 'pg.mode';
+let mode: Mode = readPref(MODE_KEY) === 'sound' ? 'sound' : 'name';
+
+export const getMode = (): Mode => mode;
+
+export function setMode(next: Mode): void {
+  if (next === mode) return;
+  mode = next;
+  writePref(MODE_KEY, next);
+  emit();
+}
+
 // ---------- silly mode (chipmunk voice, wobbly cards) ----------
 const SILLY_KEY = 'pg.silly';
 let silly = readPref(SILLY_KEY) === '1';

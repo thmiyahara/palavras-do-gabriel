@@ -71,33 +71,36 @@ function playClip(url: string, fallbackText: string, lang: Lang, myToken: number
 
 const pause = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
-/** The word, then its onomatopoeia when it has one ("cachorro" … "au au!"). */
-async function wordThenSound(id: string, lang: Lang, myToken: number): Promise<void> {
+/** What a tap plays: the name of the thing, or its sound ("au au!"). */
+export type Kind = 'name' | 'sound';
+
+function playOne(id: string, lang: Lang, kind: Kind, myToken: number): Promise<void> {
   const w = getWord(id);
-  await playClip(audioUrl(lang, id), speechText(w, lang), lang, myToken);
-  if (!w.sound || myToken !== token) return;
-  await pause(200);
-  if (myToken !== token) return;
-  await playClip(audioUrl(lang, id, 's'), w.sound[lang], lang, myToken);
+  if (kind === 'sound') {
+    if (!w.sound) return Promise.resolve(); // silent: the card is muted in the UI
+    return playClip(audioUrl(lang, id, 's'), w.sound[lang], lang, myToken);
+  }
+  return playClip(audioUrl(lang, id), speechText(w, lang), lang, myToken);
 }
 
-export function playWord(id: string, lang: Lang): Promise<void> {
-  return wordThenSound(id, lang, ++token);
+export function playWord(id: string, lang: Lang, kind: Kind = 'name'): Promise<void> {
+  return playOne(id, lang, kind, ++token);
 }
 
-export function playQuestion(id: string, lang: Lang): Promise<void> {
+export function playQuestion(id: string, lang: Lang, kind: Kind = 'name'): Promise<void> {
+  if (kind === 'sound') return playOne(id, lang, 'sound', ++token);
   const w = getWord(id);
   return playClip(audioUrl(lang, id, 'q'), speechText(w, lang, 'q'), lang, ++token);
 }
 
 /** Plays pt → en → ja. `onLang` runs before each clip (and with null at the end). */
-export async function playSequence(id: string, onLang?: (lang: Lang | null) => void): Promise<void> {
+export async function playSequence(id: string, kind: Kind = 'name', onLang?: (lang: Lang | null) => void): Promise<void> {
   const myToken = ++token;
   try {
     for (const lang of LANGS) {
       if (myToken !== token) return;
       onLang?.(lang);
-      await wordThenSound(id, lang, myToken);
+      await playOne(id, lang, kind, myToken);
       if (myToken !== token) return;
       await pause(250);
     }

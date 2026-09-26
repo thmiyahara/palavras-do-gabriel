@@ -119,8 +119,52 @@ button {
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+}
+
+.modes {
+  display: flex;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+  padding: 6px 14px;
+  border: 3px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.mode-icon {
+  font-size: 22px;
+}
+
+.mode[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--sun);
+}
+
+/* Sound mode: pictures without a sound are dimmed and silent. */
+.card.muted {
+  opacity: 0.3;
+  filter: grayscale(0.7);
+  pointer-events: none;
+  animation: none !important;
+}
+
+.grid[data-mode='sound'] .label {
+  font-style: italic;
 }
 
 .silly-btn {
@@ -193,6 +237,12 @@ button {
 
   .silly-btn {
     font-size: 24px;
+  }
+
+  .mode {
+    min-height: 46px;
+    padding: 4px 10px;
+    font-size: 14px;
   }
 
   .flag {

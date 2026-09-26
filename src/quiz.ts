@@ -1,7 +1,7 @@
 // Quiz screen: "Cadê o cachorro?" — hear a word, tap the right picture.
 import * as audio from './audio';
 import * as fx from './fx';
-import { BCP47, LANGS, addProgress, getLang, getLevel, isSilly, readPref, writePref, type Lang } from './settings';
+import { BCP47, LANGS, addProgress, getLang, getLevel, getMode, isSilly, readPref, writePref, type Lang } from './settings';
 import { categoryChips, flagNode, h, levelSwitcher, t } from './ui';
 import { WORDS, categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
@@ -24,7 +24,9 @@ function pick<T>(arr: readonly T[]): T {
 export function renderQuiz(root: HTMLElement): () => void {
   root.replaceChildren();
   const level = getLevel();
-  const cats = categoriesFor(level);
+  const mode = getMode();
+  const bySound = mode === 'sound'; // "Who makes this sound?" — only words that have one
+  const cats = categoriesFor(level, bySound);
   let cat = readPref(CAT_KEY) ?? 'all';
   if (cat !== 'all' && !cats.some((c) => c.id === cat)) cat = 'all';
   let prevId: string | null = null;
@@ -43,7 +45,7 @@ export function renderQuiz(root: HTMLElement): () => void {
       type: 'button',
       'aria-label': t('repeat'),
       onclick: () => {
-        if (target) void audio.playQuestion(target.id, roundLang);
+        if (target) void audio.playQuestion(target.id, roundLang, mode);
       },
     },
     '🔊',
@@ -82,9 +84,9 @@ export function renderQuiz(root: HTMLElement): () => void {
         out.push(w);
       }
     };
-    take(wordsFor(cat, level));
-    if (out.length < n) take(wordsFor('all', level));
-    if (out.length < n) take(WORDS);
+    take(wordsFor(cat, level, bySound));
+    if (out.length < n) take(wordsFor('all', level, bySound));
+    if (out.length < n) take(bySound ? WORDS.filter((w) => !!w.sound) : WORDS);
     return out;
   }
 
@@ -100,7 +102,7 @@ export function renderQuiz(root: HTMLElement): () => void {
     roundLang = choice === 'all' ? LANGS[langIdx++ % LANGS.length] : choice;
     const n = matchMedia('(min-width: 700px)').matches ? 4 : 3;
 
-    const pool = wordsFor(cat, level);
+    const pool = wordsFor(cat, level, bySound);
     const fresh = pool.filter((w) => w.id !== prevId);
     const chosen = pick(fresh.length ? fresh : pool);
     target = chosen;
@@ -108,9 +110,9 @@ export function renderQuiz(root: HTMLElement): () => void {
 
     options.replaceChildren(...shuffle([chosen, ...distractors(chosen, n - 1)]).map(optionCard));
     flag.replaceChildren(flagNode(roundLang));
-    text.textContent = chosen[roundLang].q;
+    text.textContent = bySound ? t('whichSound') : chosen[roundLang].q;
     text.lang = BCP47[roundLang];
-    void audio.playQuestion(chosen.id, roundLang);
+    void audio.playQuestion(chosen.id, roundLang, mode);
   }
 
   function optionCard(w: Word): HTMLButtonElement {
@@ -145,7 +147,7 @@ export function renderQuiz(root: HTMLElement): () => void {
       fx.sparkleBurst(el, 14, isSilly());
       el.classList.add('glow');
       dimOthers(tid);
-      void audio.playWord(tid, roundLang);
+      void audio.playWord(tid, roundLang, mode);
       const full = streak % STARS === 0;
       paintStars(full ? STARS : streak % STARS);
       if (full) fx.bigCelebration();
@@ -163,7 +165,7 @@ export function renderQuiz(root: HTMLElement): () => void {
       el.classList.add('dim');
       el.disabled = true;
       if (misses >= 2) dimOthers(tid); // after two misses only the right one is left
-      void audio.playQuestion(tid, roundLang);
+      void audio.playQuestion(tid, roundLang, mode);
     }
   }
 

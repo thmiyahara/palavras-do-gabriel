@@ -9,7 +9,7 @@ Tem dois modos:
 
 O botão 🌐 fala as três línguas em sequência (pt → en → ja).
 
-**Sons.** Bichos e algumas coisas (carro, trem, relógio, tambor, beijo…) fazem o som depois do nome, e cada língua imita de um jeito: "au au!", "woof woof!", "ワンワン！". O campo `sound` em `data/words.json` guarda a onomatopeia por idioma.
+**Nome ou Som.** O seletor 🔤 Nome / 🔊 Som ao lado das bandeiras escolhe o que o toque fala. Em **Som**, bichos e algumas coisas (carro, trem, relógio, tambor, beijo…) fazem só o som, e cada língua imita de um jeito: "au au!", "woof woof!", "ワンワン！"; o rótulo mostra a onomatopeia e as figuras sem som ficam apagadas e mudas. No quiz em modo Som a pergunta vira "Quem faz esse som?". O campo `sound` em `data/words.json` guarda a onomatopeia por idioma.
 
 **Modo bobo 🤪.** O botão no alto deixa a voz fininha de esquilo, os cartões ficam balançando, giram, pulam e viram gelatina ao toque, com um "boing". Em qualquer modo, três toques rápidos no mesmo cartão fazem ele rodopiar.
 

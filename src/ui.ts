@@ -3,10 +3,12 @@ import {
   MEDAL_AT,
   getLang,
   getLevel,
+  getMode,
   getProgress,
   isSilly,
   setLang,
   setLevel,
+  setMode,
   setSilly,
   uiLang,
   type Lang,
@@ -56,6 +58,9 @@ const T = {
   level: { pt: 'Nível', en: 'Level', ja: 'レベル' },
   allLevels: { pt: 'Todos', en: 'All', ja: 'ぜんぶ' },
   silly: { pt: 'Modo bobo', en: 'Silly mode', ja: 'おふざけモード' },
+  name: { pt: 'Nome', en: 'Name', ja: 'なまえ' },
+  sound: { pt: 'Som', en: 'Sound', ja: 'おと' },
+  whichSound: { pt: 'Quem faz esse som?', en: 'Who makes this sound?', ja: 'このおとはだれ？' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];
@@ -94,6 +99,19 @@ export function langSwitcher(): HTMLElement {
       ),
     ),
   );
+}
+
+/** Name / Sound switch: what a tap on a picture plays. */
+export function modeSwitcher(): HTMLElement {
+  const current = getMode();
+  const btn = (mode: 'name' | 'sound', icon: string): HTMLElement =>
+    h(
+      'button',
+      { class: 'mode', type: 'button', 'aria-pressed': String(current === mode), onclick: () => setMode(mode) },
+      h('span', { class: 'mode-icon' }, icon),
+      h('span', {}, t(mode)),
+    );
+  return h('div', { class: 'modes', role: 'group' }, btn('name', '🔤'), btn('sound', '🔊'));
 }
 
 /** 🤪 toggle: chipmunk voice + wobbly cards. */

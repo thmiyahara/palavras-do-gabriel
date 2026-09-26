@@ -47,13 +47,13 @@ export const categoryOf = (id: string): Category | undefined => CATEGORIES.find(
 
 const atLevel = (w: Word, level: LevelChoice): boolean => level === 'all' || w.level === level;
 
-/** Words of one category (or 'all') at one level (or 'all'). */
-export const wordsFor = (cat: string, level: LevelChoice): Word[] =>
-  WORDS.filter((w) => (cat === 'all' || w.cat === cat) && atLevel(w, level));
+/** Words of one category (or 'all') at one level (or 'all'); `withSound` keeps only words that have a sound. */
+export const wordsFor = (cat: string, level: LevelChoice, withSound = false): Word[] =>
+  WORDS.filter((w) => (cat === 'all' || w.cat === cat) && atLevel(w, level) && (!withSound || !!w.sound));
 
-/** Categories that have at least one word at the level, in display order. */
-export const categoriesFor = (level: LevelChoice): Category[] =>
-  CATEGORIES.filter((c) => WORDS.some((w) => w.cat === c.id && atLevel(w, level)));
+/** Categories that have at least one matching word, in display order. */
+export const categoriesFor = (level: LevelChoice, withSound = false): Category[] =>
+  CATEGORIES.filter((c) => wordsFor(c.id, level, withSound).length > 0);
 
 const BASE = import.meta.env.BASE_URL;
 

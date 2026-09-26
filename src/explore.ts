@@ -1,17 +1,19 @@
-// Explore screen: pick a level and a category, tap a picture, hear the word.
+// Explore screen: pick a level and a category, tap a picture, hear its name (or its sound).
 import * as audio from './audio';
 import * as fx from './fx';
-import { getCategory, getLang, getLevel, isSilly, setCategory, type Lang } from './settings';
+import { getCategory, getLang, getLevel, getMode, isSilly, setCategory, type Lang, type Mode } from './settings';
 import { categoryChips, h, levelSwitcher } from './ui';
 import { categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
 export function renderExplore(root: HTMLElement): () => void {
   root.replaceChildren();
   const level = getLevel();
-  const cats = categoriesFor(level);
+  const mode = getMode();
+  // In sound mode only categories with at least one sound are offered.
+  const cats = categoriesFor(level, mode === 'sound');
   let cat = cats.some((c) => c.id === getCategory()) ? getCategory() : cats[0].id;
 
-  const grid = h('div', { class: 'grid', 'data-lang': getLang() });
+  const grid = h('div', { class: 'grid', 'data-lang': getLang(), 'data-mode': mode });
   let chips = categoryChips(cat, select, false, cats);
   root.append(levelSwitcher(), chips, grid);
   fill();
@@ -27,26 +29,29 @@ export function renderExplore(root: HTMLElement): () => void {
 
   function fill(): void {
     const tint = categoryOf(cat)?.tint ?? '#ffffff';
-    grid.replaceChildren(...wordsFor(cat, level).map((w) => card(w, tint)));
+    grid.replaceChildren(...wordsFor(cat, level).map((w) => card(w, tint, mode)));
   }
 
   return () => audio.stop();
 }
 
-function card(w: Word, tint: string): HTMLElement {
-  const sub = [w.ja.kanji, w.ja.romaji].filter(Boolean).join(' · ');
+function card(w: Word, tint: string, mode: Mode): HTMLElement {
+  const muted = mode === 'sound' && !w.sound;
+  const label = (lang: Lang): string => (mode === 'sound' ? (w.sound?.[lang] ?? '') : w[lang].w);
+  const sub = mode === 'sound' ? '' : [w.ja.kanji, w.ja.romaji].filter(Boolean).join(' · ');
   const el = h(
     'button',
-    { class: 'card', type: 'button', style: { '--tint': tint } },
+    { class: muted ? 'card muted' : 'card', type: 'button', style: { '--tint': tint }, disabled: muted, 'aria-disabled': muted ? 'true' : null },
     h('img', { src: imgUrl(w.id), alt: '', draggable: 'false' }),
     h(
       'span',
       { class: 'label' },
-      h('span', { class: 'l-pt', lang: 'pt-BR' }, w.pt.w),
-      h('span', { class: 'l-en', lang: 'en' }, w.en.w),
-      h('span', { class: 'l-ja', lang: 'ja' }, h('span', { class: 'kana' }, w.ja.w), h('span', { class: 'sub' }, sub)),
+      h('span', { class: 'l-pt', lang: 'pt-BR' }, label('pt')),
+      h('span', { class: 'l-en', lang: 'en' }, label('en')),
+      h('span', { class: 'l-ja', lang: 'ja' }, h('span', { class: 'kana' }, label('ja')), h('span', { class: 'sub' }, sub)),
     ),
   );
+  if (muted) return el; // no sound to play: dimmed and silent
 
   let seq = 0;
   let taps = 0;
@@ -73,13 +78,13 @@ function card(w: Word, tint: string): HTMLElement {
     const lang = getLang();
     if (lang === 'all') {
       const mine = ++seq;
-      void audio.playSequence(w.id, (l: Lang | null) => {
+      void audio.playSequence(w.id, mode, (l: Lang | null) => {
         if (mine !== seq) return;
         if (l) el.dataset.speaking = l;
         else delete el.dataset.speaking;
       });
     } else {
-      void audio.playWord(w.id, lang);
+      void audio.playWord(w.id, lang, mode);
     }
   });
   return el;
