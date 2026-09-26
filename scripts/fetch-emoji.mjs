@@ -18,10 +18,12 @@ const exists = (p) => access(p).then(() => true, () => false);
 const snake = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
 
 // Plain emoji live in <Name>/3D/, skin-tone emoji in <Name>/Default/3D/.
+// File names are the folder name in lowercase with spaces as underscores; names with
+// a hyphen (T-Rex, T-shirt) may keep it, so both spellings are tried.
 function candidates(folder) {
-  const s = snake(folder);
   const f = encodeURIComponent(folder);
-  return [`assets/${f}/3D/${s}_3d.png`, `assets/${f}/Default/3D/${s}_3d_default.png`];
+  const names = [...new Set([snake(folder), folder.toLowerCase().replace(/ /g, '_')])];
+  return names.flatMap((s) => [`assets/${f}/3D/${s}_3d.png`, `assets/${f}/Default/3D/${s}_3d_default.png`]);
 }
 
 async function fetchFirst(paths) {

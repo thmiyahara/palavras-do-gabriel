@@ -4,7 +4,7 @@ Joguinho para aprender as primeiras palavras em **português, inglês e japonês
 A criança toca num desenho, o cartão faz uma animação e o app fala o nome no idioma escolhido.
 Tem dois modos:
 
-- **Explorar** – grade de cartões por categoria (família, animais, comida, corpo, casa, veículos, natureza, cores, números). Tocar = ouvir a palavra.
+- **Explorar** – 157 palavras em 12 categorias (pessoas, animais, comida, corpo, roupas, casa, veículos, natureza, sentimentos, cores, formas, números). Tocar = ouvir a palavra.
 - **Quiz** – "Cadê o cachorro?" O app fala e a criança toca no desenho certo. Acertou: festa de confete e estrelinha. Errou: o cartão errado some, sem som negativo.
 
 O botão 🌐 fala as três línguas em sequência (pt → en → ja).
