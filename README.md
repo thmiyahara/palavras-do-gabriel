@@ -9,6 +9,15 @@ Tem dois modos:
 
 O botão 🌐 fala as três línguas em sequência (pt → en → ja).
 
+**Níveis.** Cada palavra tem um nível de dificuldade, seguindo a ordem em que as crianças costumam aprender vocabulário:
+
+- ★ **Nível 1** – primeiras palavras (mamãe, cachorro, bola, banana, olho, banho…): o que a maioria fala até os 2 anos.
+- ★★ **Nível 2** – o mundo do dia a dia: bichos da fazenda e do zoológico, mais comidas, roupas, casa, veículos, cores básicas, 1 a 3.
+- ★★★ **Nível 3** – palavras mais raras ou abstratas: profissões, bichos exóticos, sentimentos, formas, demais cores, 4 a 10.
+- **Todos** – tudo junto.
+
+O seletor de nível aparece no alto do Explorar e do Quiz e vale para os dois. Só as categorias que têm palavras naquele nível são mostradas. A cada 25 acertos no quiz em um nível, o botão dele ganha uma medalha 🏅.
+
 É um **PWA** (Progressive Web App): abre no navegador e pode ser instalado na tela inicial do celular ou tablet, funcionando offline depois da primeira abertura.
 
 ## Rodar no computador
@@ -55,7 +64,7 @@ Depois da primeira abertura online, todas as imagens e áudios ficam guardados n
 
 ## Mudar ou acrescentar palavras
 
-Toda a lista fica em `data/words.json` (palavra, pergunta do quiz, kana/kanji/romaji e o nome da pasta do emoji no repositório do Fluent Emoji).
+Toda a lista fica em `data/words.json` (palavra, pergunta do quiz, kana/kanji/romaji, nível de 1 a 3 e o nome da pasta do emoji no repositório do Fluent Emoji).
 
 ```bash
 npm run fetch:emoji   # baixa os desenhos que faltam para public/img/

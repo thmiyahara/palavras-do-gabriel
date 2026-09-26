@@ -1,5 +1,17 @@
-import { BCP47, getLang, setLang, uiLang, type Lang, type LangChoice } from './settings';
-import { CATEGORIES, imgUrl } from './words';
+import {
+  BCP47,
+  MEDAL_AT,
+  getLang,
+  getLevel,
+  getProgress,
+  setLang,
+  setLevel,
+  uiLang,
+  type Lang,
+  type LangChoice,
+  type LevelChoice,
+} from './settings';
+import { CATEGORIES, imgUrl, type Category } from './words';
 
 type Child = Node | string | number | null | undefined | false;
 type Attrs = Record<string, unknown>;
@@ -39,6 +51,8 @@ const T = {
   all: { pt: 'Tudo', en: 'All', ja: 'ぜんぶ' },
   repeat: { pt: 'Repetir', en: 'Repeat', ja: 'もういちど' },
   language: { pt: 'Idioma', en: 'Language', ja: 'ことば' },
+  level: { pt: 'Nível', en: 'Level', ja: 'レベル' },
+  allLevels: { pt: 'Todos', en: 'All', ja: 'ぜんぶ' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];
@@ -79,8 +93,40 @@ export function langSwitcher(): HTMLElement {
   );
 }
 
+/** Row of difficulty levels (★, ★★, ★★★, all). A medal appears once the quiz level is mastered. */
+export function levelSwitcher(): HTMLElement {
+  const current = getLevel();
+  const progress = getProgress();
+  const choices: LevelChoice[] = [1, 2, 3, 'all'];
+  return h(
+    'div',
+    { class: 'levels', role: 'group', 'aria-label': t('level') },
+    h('span', { class: 'levels-label' }, t('level')),
+    ...choices.map((c) => {
+      const earned = c !== 'all' && (progress[c] ?? 0) >= MEDAL_AT;
+      return h(
+        'button',
+        {
+          class: c === 'all' ? 'level level-all' : 'level',
+          type: 'button',
+          'aria-label': c === 'all' ? t('allLevels') : `${t('level')} ${c}`,
+          'aria-pressed': String(current === c),
+          onclick: () => setLevel(c),
+        },
+        c === 'all' ? t('allLevels') : '★'.repeat(c),
+        earned ? h('span', { class: 'medal', 'aria-label': '🏅' }, '🏅') : null,
+      );
+    }),
+  );
+}
+
 /** Horizontal row of category buttons; `withAll` adds a "Tudo" chip with id "all". */
-export function categoryChips(current: string, onSelect: (id: string) => void, withAll = false): HTMLElement {
+export function categoryChips(
+  current: string,
+  onSelect: (id: string) => void,
+  withAll = false,
+  categories: readonly Category[] = CATEGORIES,
+): HTMLElement {
   const lang = uiLang();
   const chip = (id: string, icon: Node, label: string, tint: string): HTMLElement =>
     h(
@@ -99,7 +145,7 @@ export function categoryChips(current: string, onSelect: (id: string) => void, w
 
   const wrap = h('div', { class: 'chips' });
   if (withAll) wrap.append(chip('all', h('span', { class: 'chip-all' }, '✨'), t('all'), '#ffffff'));
-  for (const c of CATEGORIES) {
+  for (const c of categories) {
     wrap.append(chip(c.id, h('img', { src: imgUrl(c.icon), alt: '', draggable: 'false' }), c.label[lang], c.tint));
   }
   // Center the active chip horizontally without touching the page's vertical scroll.

@@ -3,7 +3,7 @@ import { registerSW } from 'virtual:pwa-register';
 import * as audio from './audio';
 import { renderExplore } from './explore';
 import { renderQuiz } from './quiz';
-import { onLangChange } from './settings';
+import { onSettingsChange } from './settings';
 import { h, langSwitcher, t } from './ui';
 
 registerSW({ immediate: true });
@@ -47,5 +47,5 @@ function render(): void {
 }
 
 window.addEventListener('hashchange', render);
-onLangChange(render);
+onSettingsChange(render);
 render();

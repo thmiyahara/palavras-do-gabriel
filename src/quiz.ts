@@ -1,9 +1,9 @@
 // Quiz screen: "Cadê o cachorro?" — hear a word, tap the right picture.
 import * as audio from './audio';
 import * as fx from './fx';
-import { BCP47, LANGS, getLang, readPref, writePref, type Lang } from './settings';
-import { categoryChips, flagNode, h, t } from './ui';
-import { WORDS, byCategory, categoryOf, imgUrl, type Word } from './words';
+import { BCP47, LANGS, addProgress, getLang, getLevel, readPref, writePref, type Lang } from './settings';
+import { categoryChips, flagNode, h, levelSwitcher, t } from './ui';
+import { WORDS, categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
 const CAT_KEY = 'pg.quizcat';
 const STARS = 5;
@@ -23,8 +23,10 @@ function pick<T>(arr: readonly T[]): T {
 
 export function renderQuiz(root: HTMLElement): () => void {
   root.replaceChildren();
+  const level = getLevel();
+  const cats = categoriesFor(level);
   let cat = readPref(CAT_KEY) ?? 'all';
-  if (cat !== 'all' && !categoryOf(cat)) cat = 'all';
+  if (cat !== 'all' && !cats.some((c) => c.id === cat)) cat = 'all';
   let prevId: string | null = null;
   let streak = 0;
   let misses = 0;
@@ -56,19 +58,35 @@ export function renderQuiz(root: HTMLElement): () => void {
   );
   const options = h('div', { class: 'options' });
   const startBtn = h('button', { class: 'start', type: 'button', onclick: () => newRound() }, `▶ ${t('start')}`);
-  let chips = categoryChips(cat, select, true);
-  root.append(chips, prompt, stars, options, startBtn);
+  let chips = categoryChips(cat, select, true, cats);
+  root.append(levelSwitcher(), chips, prompt, stars, options, startBtn);
 
   function select(id: string): void {
     cat = id;
     writePref(CAT_KEY, id);
-    const fresh = categoryChips(cat, select, true);
+    const fresh = categoryChips(cat, select, true, cats);
     chips.replaceWith(fresh);
     chips = fresh;
     if (target) newRound();
   }
 
-  const pool = (): Word[] => (cat === 'all' ? WORDS : byCategory(cat));
+  /** Distractors: same category and level first, then same level, then anything. */
+  function distractors(chosen: Word, n: number): Word[] {
+    const used = new Set<string>([chosen.id]);
+    const out: Word[] = [];
+    const take = (pool: Word[]): void => {
+      for (const w of shuffle(pool)) {
+        if (out.length >= n) return;
+        if (used.has(w.id)) continue;
+        used.add(w.id);
+        out.push(w);
+      }
+    };
+    take(wordsFor(cat, level));
+    if (out.length < n) take(wordsFor('all', level));
+    if (out.length < n) take(WORDS);
+    return out;
+  }
 
   function newRound(): void {
     clearTimeout(timer);
@@ -82,19 +100,13 @@ export function renderQuiz(root: HTMLElement): () => void {
     roundLang = choice === 'all' ? LANGS[langIdx++ % LANGS.length] : choice;
     const n = matchMedia('(min-width: 700px)').matches ? 4 : 3;
 
-    const p = pool();
-    const fresh = p.filter((w) => w.id !== prevId);
-    const chosen = pick(fresh.length ? fresh : p);
+    const pool = wordsFor(cat, level);
+    const fresh = pool.filter((w) => w.id !== prevId);
+    const chosen = pick(fresh.length ? fresh : pool);
     target = chosen;
     prevId = chosen.id;
 
-    const others = shuffle(p.filter((w) => w.id !== chosen.id)).slice(0, n - 1);
-    if (others.length < n - 1) {
-      const used = new Set([chosen.id, ...others.map((w) => w.id)]);
-      others.push(...shuffle(WORDS.filter((w) => !used.has(w.id))).slice(0, n - 1 - others.length));
-    }
-
-    options.replaceChildren(...shuffle([chosen, ...others]).map(optionCard));
+    options.replaceChildren(...shuffle([chosen, ...distractors(chosen, n - 1)]).map(optionCard));
     flag.replaceChildren(flagNode(roundLang));
     text.textContent = chosen[roundLang].q;
     text.lang = BCP47[roundLang];
@@ -123,6 +135,7 @@ export function renderQuiz(root: HTMLElement): () => void {
     if (w.id === tid) {
       locked = true;
       streak++;
+      if (level !== 'all') addProgress(level);
       fx.pop(el);
       fx.sparkleBurst(el, 14);
       el.classList.add('glow');

@@ -1,5 +1,5 @@
 import data from '../data/words.json';
-import type { Lang } from './settings';
+import type { Lang, Level, LevelChoice } from './settings';
 
 export interface Translation {
   /** The word as displayed (kana for Japanese). */
@@ -15,6 +15,8 @@ export interface Translation {
 export interface Word {
   id: string;
   cat: string;
+  /** 1 = first words, 2 = everyday world, 3 = harder / more abstract. */
+  level: Level;
   emoji: string;
   pt: Translation;
   en: Translation;
@@ -39,8 +41,17 @@ export function getWord(id: string): Word {
   return w;
 }
 
-export const byCategory = (cat: string): Word[] => WORDS.filter((w) => w.cat === cat);
 export const categoryOf = (id: string): Category | undefined => CATEGORIES.find((c) => c.id === id);
+
+const atLevel = (w: Word, level: LevelChoice): boolean => level === 'all' || w.level === level;
+
+/** Words of one category (or 'all') at one level (or 'all'). */
+export const wordsFor = (cat: string, level: LevelChoice): Word[] =>
+  WORDS.filter((w) => (cat === 'all' || w.cat === cat) && atLevel(w, level));
+
+/** Categories that have at least one word at the level, in display order. */
+export const categoriesFor = (level: LevelChoice): Category[] =>
+  CATEGORIES.filter((c) => WORDS.some((w) => w.cat === c.id && atLevel(w, level)));
 
 const BASE = import.meta.env.BASE_URL;
 

@@ -1,22 +1,25 @@
-// Explore screen: pick a category, tap a picture, hear the word.
+// Explore screen: pick a level and a category, tap a picture, hear the word.
 import * as audio from './audio';
 import * as fx from './fx';
-import { getCategory, getLang, setCategory, type Lang } from './settings';
-import { categoryChips, h } from './ui';
-import { byCategory, categoryOf, imgUrl, type Word } from './words';
+import { getCategory, getLang, getLevel, setCategory, type Lang } from './settings';
+import { categoryChips, h, levelSwitcher } from './ui';
+import { categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
 export function renderExplore(root: HTMLElement): () => void {
   root.replaceChildren();
-  let cat = categoryOf(getCategory()) ? getCategory() : 'animals';
+  const level = getLevel();
+  const cats = categoriesFor(level);
+  let cat = cats.some((c) => c.id === getCategory()) ? getCategory() : cats[0].id;
+
   const grid = h('div', { class: 'grid', 'data-lang': getLang() });
-  let chips = categoryChips(cat, select);
-  root.append(chips, grid);
+  let chips = categoryChips(cat, select, false, cats);
+  root.append(levelSwitcher(), chips, grid);
   fill();
 
   function select(id: string): void {
     cat = id;
     setCategory(id);
-    const fresh = categoryChips(cat, select);
+    const fresh = categoryChips(cat, select, false, cats);
     chips.replaceWith(fresh);
     chips = fresh;
     fill();
@@ -24,7 +27,7 @@ export function renderExplore(root: HTMLElement): () => void {
 
   function fill(): void {
     const tint = categoryOf(cat)?.tint ?? '#ffffff';
-    grid.replaceChildren(...byCategory(cat).map((w) => card(w, tint)));
+    grid.replaceChildren(...wordsFor(cat, level).map((w) => card(w, tint)));
   }
 
   return () => audio.stop();

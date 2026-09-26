@@ -177,6 +177,53 @@ button {
   }
 }
 
+/* ---------- level switcher ---------- */
+.levels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 10px;
+}
+
+.levels-label {
+  margin-right: 2px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.level {
+  position: relative;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #e0a800;
+}
+
+.level-all {
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+.level[aria-pressed='true'] {
+  border-color: var(--ink);
+}
+
+.medal {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  font-size: 16px;
+  line-height: 1;
+}
+
 /* ---------- category chips ---------- */
 .chips {
   position: relative; /* offsetLeft of chips is measured from here */
