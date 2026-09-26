@@ -2,6 +2,7 @@ import './style.css';
 import { registerSW } from 'virtual:pwa-register';
 import * as audio from './audio';
 import { renderExplore } from './explore';
+import * as people from './people';
 import * as photos from './photos';
 import { renderQuiz } from './quiz';
 import { isSilly, onSettingsChange } from './settings';
@@ -51,4 +52,4 @@ function render(): void {
 window.addEventListener('hashchange', render);
 onSettingsChange(render);
 // Family photos live in IndexedDB on this device; load them before the first paint.
-void photos.load().finally(render);
+void Promise.all([photos.load(), people.load()]).finally(render);

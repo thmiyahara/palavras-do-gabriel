@@ -1,6 +1,7 @@
 // Plays the pre-recorded MP3 clips through ONE shared <audio> element.
 // iOS only allows playback started synchronously inside a user gesture; once this
 // element has played from a tap, later programmatic plays on it are allowed too.
+import * as people from './people';
 import { BCP47, LANGS, isSilly, type Lang } from './settings';
 import * as speech from './speech';
 import { audioUrl, getWord, speechText } from './words';
@@ -74,12 +75,20 @@ const pause = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
 /** What a tap plays: the name of the thing, or its sound ("au au!"). */
 export type Kind = 'name' | 'sound';
 
+/** People added on the device have no MP3: play the recording, else the device voice. */
+function playCustom(id: string, text: string, lang: Lang, myToken: number): Promise<void> {
+  const url = people.voiceUrl(id);
+  if (url) return playClip(url, text, lang, myToken);
+  return speech.speak(text, BCP47[lang]);
+}
+
 function playOne(id: string, lang: Lang, kind: Kind, myToken: number): Promise<void> {
   const w = getWord(id);
   if (kind === 'sound') {
     if (!w.sound) return Promise.resolve(); // silent: the card is muted in the UI
     return playClip(audioUrl(lang, id, 's'), w.sound[lang], lang, myToken);
   }
+  if (w.custom) return playCustom(id, w[lang].w, lang, myToken);
   return playClip(audioUrl(lang, id), speechText(w, lang), lang, myToken);
 }
 
@@ -90,6 +99,12 @@ export function playWord(id: string, lang: Lang, kind: Kind = 'name'): Promise<v
 export function playQuestion(id: string, lang: Lang, kind: Kind = 'name'): Promise<void> {
   if (kind === 'sound') return playOne(id, lang, 'sound', ++token);
   const w = getWord(id);
+  if (w.custom) {
+    // "Cadê Ana?" by the device voice; if it cannot speak, the recording alone still works.
+    const myToken = ++token;
+    current?.abort();
+    return speech.available() ? speech.speak(w[lang].q, BCP47[lang]) : playCustom(id, w[lang].w, lang, myToken);
+  }
   return playClip(audioUrl(lang, id, 'q'), speechText(w, lang, 'q'), lang, ++token);
 }
 

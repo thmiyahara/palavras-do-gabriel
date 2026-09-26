@@ -1,6 +1,8 @@
 // Explore screen: pick a level and a category, tap a picture, hear its name (or its sound).
 import * as audio from './audio';
 import * as fx from './fx';
+import * as people from './people';
+import { openPersonDialog } from './person-dialog';
 import * as photos from './photos';
 import { getCategory, getLang, getLevel, getMode, isSilly, setCategory, type Lang, type Mode } from './settings';
 import { categoryChips, h, levelSwitcher, t } from './ui';
@@ -45,7 +47,18 @@ export function renderExplore(root: HTMLElement): () => void {
     hint.hidden = !editing;
     grid.classList.toggle('editing', editing);
     const tint = categoryOf(cat)?.tint ?? '#ffffff';
-    grid.replaceChildren(...wordsFor(cat, level).map((w) => card(w, tint, mode, editing ? fill : null)));
+    const cards = wordsFor(cat, level).map((w) => card(w, tint, mode, editing ? fill : null));
+    if (editing) {
+      cards.push(
+        h(
+          'button',
+          { class: 'card add-person', type: 'button', style: { '--tint': tint }, onclick: () => openPersonDialog(null, fill) },
+          h('span', { class: 'add-plus' }, '➕'),
+          h('span', { class: 'label' }, t('addPerson')),
+        ),
+      );
+    }
+    grid.replaceChildren(...cards);
   }
 
   return () => audio.stop();
@@ -53,12 +66,12 @@ export function renderExplore(root: HTMLElement): () => void {
 
 /** Picture of a word: the family photo when the grown-up chose one, else the drawing. */
 export function pictureOf(w: Word): HTMLElement {
-  const photo = photos.photoOf(w.id);
+  const photo = w.custom ? people.get(w.id)?.photo : photos.photoOf(w.id);
   return h('img', { class: photo ? 'photo' : null, src: photo ?? imgUrl(w.id), alt: '', draggable: 'false' });
 }
 
 function card(w: Word, tint: string, mode: Mode, onPhotoChange: (() => void) | null): HTMLElement {
-  const editable = !!onPhotoChange && photos.canHavePhoto(w.id);
+  const editable = !!onPhotoChange && (photos.canHavePhoto(w.id) || !!w.custom);
   const muted = (mode === 'sound' && !w.sound) || (!!onPhotoChange && !editable);
   const label = (lang: Lang): string => (mode === 'sound' ? (w.sound?.[lang] ?? '') : w[lang].w);
   const sub = mode === 'sound' ? '' : [w.ja.kanji, w.ja.romaji].filter(Boolean).join(' · ');
@@ -81,6 +94,12 @@ function card(w: Word, tint: string, mode: Mode, onPhotoChange: (() => void) | n
     ),
   );
   if (muted) return el; // nothing to play: dimmed and silent
+
+  if (editable && w.custom) {
+    el.append(h('span', { class: 'badge' }, '✏️'));
+    el.addEventListener('click', () => openPersonDialog(people.get(w.id) ?? null, onPhotoChange));
+    return el;
+  }
 
   if (editable) {
     el.append(h('span', { class: 'badge' }, '📷'));

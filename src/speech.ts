@@ -13,6 +13,8 @@ if (synth) {
   synth.addEventListener('voiceschanged', refresh);
 }
 
+export const available = (): boolean => !!synth;
+
 const norm = (tag: string): string => tag.replace('_', '-').toLowerCase();
 
 function pickVoice(lang: string): SpeechSynthesisVoice | undefined {

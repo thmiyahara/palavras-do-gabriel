@@ -1,4 +1,5 @@
 import data from '../data/words.json';
+import * as people from './people';
 import type { Lang, Level, LevelChoice } from './settings';
 
 export interface Translation {
@@ -23,6 +24,8 @@ export interface Word {
   ja: Translation;
   /** Optional onomatopoeia per language ("au au!", "woof woof!", "ワンワン！"). */
   sound?: Record<Lang, string>;
+  /** A person added on this device: photo + recorded/spoken name, no MP3 files. */
+  custom?: boolean;
 }
 
 export interface Category {
@@ -37,19 +40,22 @@ export const CATEGORIES = data.categories as unknown as Category[];
 
 const byId = new Map(WORDS.map((w) => [w.id, w]));
 
+/** Built-in words followed by the people added on this device. */
+export const allWords = (): Word[] => [...WORDS, ...people.asWords()];
+
 export function getWord(id: string): Word {
-  const w = byId.get(id);
+  const w = byId.get(id) ?? people.asWords().find((p) => p.id === id);
   if (!w) throw new Error(`unknown word: ${id}`);
   return w;
 }
 
 export const categoryOf = (id: string): Category | undefined => CATEGORIES.find((c) => c.id === id);
 
-const atLevel = (w: Word, level: LevelChoice): boolean => level === 'all' || w.level === level;
+const atLevel = (w: Word, level: LevelChoice): boolean => level === 'all' || w.level === level || !!w.custom;
 
 /** Words of one category (or 'all') at one level (or 'all'); `withSound` keeps only words that have a sound. */
 export const wordsFor = (cat: string, level: LevelChoice, withSound = false): Word[] =>
-  WORDS.filter((w) => (cat === 'all' || w.cat === cat) && atLevel(w, level) && (!withSound || !!w.sound));
+  allWords().filter((w) => (cat === 'all' || w.cat === cat) && atLevel(w, level) && (!withSound || !!w.sound));
 
 /** Categories that have at least one matching word, in display order. */
 export const categoriesFor = (level: LevelChoice, withSound = false): Category[] =>

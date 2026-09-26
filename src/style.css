@@ -218,6 +218,103 @@ button {
   box-shadow: var(--shadow);
 }
 
+.card.add-person {
+  border: 3px dashed var(--muted);
+  background: #fff;
+}
+
+.add-plus {
+  font-size: 44px;
+}
+
+/* ---------- add / edit person dialog ---------- */
+.p-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(43, 45, 66, 0.55);
+}
+
+.p-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(420px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.p-title {
+  margin: 0;
+  font-size: 22px;
+}
+
+.p-preview {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 4px #fff;
+}
+
+.p-name {
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 3px solid #ddd;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 18px;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.p-btn {
+  min-height: 48px;
+  padding: 8px 16px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.p-btn.p-recording {
+  border-color: var(--accent);
+  background: #fff0f0;
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+.p-save {
+  background: var(--sun);
+}
+
+.p-delete {
+  color: #fff;
+  background: var(--accent);
+}
+
+.p-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.p-error {
+  margin: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* Sound mode: pictures without a sound are dimmed and silent. */
 .card.muted {
   opacity: 0.3;

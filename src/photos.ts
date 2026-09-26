@@ -41,7 +41,7 @@ export async function load(): Promise<void> {
 export const photoOf = (id: string): string | undefined => cache.get(id);
 
 /** Shrinks and center-crops the picked image to a square JPEG data URL. */
-function shrink(file: File): Promise<string> {
+export function shrinkToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -71,7 +71,7 @@ function shrink(file: File): Promise<string> {
 }
 
 export async function setPhoto(id: string, file: File): Promise<void> {
-  const dataUrl = await shrink(file);
+  const dataUrl = await shrinkToDataUrl(file);
   cache.set(id, dataUrl);
   try {
     const db = await openDb();

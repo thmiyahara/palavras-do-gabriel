@@ -68,6 +68,16 @@ const T = {
     ja: 'ひとをタップしてしゃしんをえらんでね。しゃしんはこのたんまつにだけほぞんされます。',
   },
   removePhoto: { pt: 'Tirar foto', en: 'Remove photo', ja: 'しゃしんをけす' },
+  addPerson: { pt: 'Adicionar pessoa', en: 'Add person', ja: 'ひとをついか' },
+  personName: { pt: 'Nome (como ele fala)', en: 'Name (as the child says it)', ja: 'なまえ' },
+  choosePhoto: { pt: 'Escolher foto', en: 'Choose photo', ja: 'しゃしんをえらぶ' },
+  recordName: { pt: 'Gravar o nome', en: 'Record the name', ja: 'なまえをろくおん' },
+  recording: { pt: 'Gravando… toque para parar', en: 'Recording… tap to stop', ja: 'ろくおんちゅう…タップでとめる' },
+  recorded: { pt: 'Gravado ✓ (toque para regravar)', en: 'Recorded ✓ (tap to redo)', ja: 'ろくおんずみ ✓' },
+  save: { pt: 'Salvar', en: 'Save', ja: 'ほぞん' },
+  cancel: { pt: 'Cancelar', en: 'Cancel', ja: 'やめる' },
+  delete: { pt: 'Excluir', en: 'Delete', ja: 'さくじょ' },
+  needPhoto: { pt: 'Escolha um nome e uma foto.', en: 'Pick a name and a photo.', ja: 'なまえとしゃしんをえらんでね。' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];
