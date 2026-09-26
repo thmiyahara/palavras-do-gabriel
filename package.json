@@ -1,0 +1,19 @@
+{
+  "name": "palavras-do-gabriel",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "fetch:emoji": "node scripts/fetch-emoji.mjs",
+    "gen:audio": "python scripts/gen-audio.py",
+    "gen:icons": "python scripts/make-icons.py"
+  },
+  "devDependencies": {
+    "typescript": "~5.9",
+    "vite": "^8",
+    "vite-plugin-pwa": "^1.3"
+  }
+}

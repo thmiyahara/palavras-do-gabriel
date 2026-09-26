@@ -1,0 +1,65 @@
+// Explore screen: pick a category, tap a picture, hear the word.
+import * as audio from './audio';
+import * as fx from './fx';
+import { getCategory, getLang, setCategory, type Lang } from './settings';
+import { categoryChips, h } from './ui';
+import { byCategory, categoryOf, imgUrl, type Word } from './words';
+
+export function renderExplore(root: HTMLElement): () => void {
+  root.replaceChildren();
+  let cat = categoryOf(getCategory()) ? getCategory() : 'animals';
+  const grid = h('div', { class: 'grid', 'data-lang': getLang() });
+  let chips = categoryChips(cat, select);
+  root.append(chips, grid);
+  fill();
+
+  function select(id: string): void {
+    cat = id;
+    setCategory(id);
+    const fresh = categoryChips(cat, select);
+    chips.replaceWith(fresh);
+    chips = fresh;
+    fill();
+  }
+
+  function fill(): void {
+    const tint = categoryOf(cat)?.tint ?? '#ffffff';
+    grid.replaceChildren(...byCategory(cat).map((w) => card(w, tint)));
+  }
+
+  return () => audio.stop();
+}
+
+function card(w: Word, tint: string): HTMLElement {
+  const sub = [w.ja.kanji, w.ja.romaji].filter(Boolean).join(' · ');
+  const el = h(
+    'button',
+    { class: 'card', type: 'button', style: { '--tint': tint } },
+    h('img', { src: imgUrl(w.id), alt: '', draggable: 'false' }),
+    h(
+      'span',
+      { class: 'label' },
+      h('span', { class: 'l-pt', lang: 'pt-BR' }, w.pt.w),
+      h('span', { class: 'l-en', lang: 'en' }, w.en.w),
+      h('span', { class: 'l-ja', lang: 'ja' }, h('span', { class: 'kana' }, w.ja.w), h('span', { class: 'sub' }, sub)),
+    ),
+  );
+
+  let seq = 0;
+  el.addEventListener('click', () => {
+    fx.pop(el);
+    fx.sparkleBurst(el);
+    const lang = getLang();
+    if (lang === 'all') {
+      const mine = ++seq;
+      void audio.playSequence(w.id, (l: Lang | null) => {
+        if (mine !== seq) return;
+        if (l) el.dataset.speaking = l;
+        else delete el.dataset.speaking;
+      });
+    } else {
+      void audio.playWord(w.id, lang);
+    }
+  });
+  return el;
+}
