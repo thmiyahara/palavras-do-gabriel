@@ -20,7 +20,8 @@ VOICES = {
     "en": "en-US-JennyNeural",
     "ja": "ja-JP-NanamiNeural",
 }
-RATE = "-10%"  # a little slower for small ears
+WORD_PROSODY = {"rate": "-10%"}  # a little slower for small ears
+SOUND_PROSODY = {"rate": "+5%", "pitch": "+25Hz"}  # onomatopoeia: playful and higher
 CONCURRENCY = 3
 RETRIES = 3
 
@@ -30,18 +31,20 @@ def jobs(data):
         for lang, voice in VOICES.items():
             entry = w[lang]
             word_text = entry.get("tts") or entry["w"]
-            yield OUT / lang / f"{w['id']}.mp3", word_text, voice
-            yield OUT / lang / f"q_{w['id']}.mp3", entry["q"], voice
+            yield OUT / lang / f"{w['id']}.mp3", word_text, voice, WORD_PROSODY
+            yield OUT / lang / f"q_{w['id']}.mp3", entry["q"], voice, WORD_PROSODY
+            if "sound" in w:  # "au au!", "woof woof!", "ワンワン！"
+                yield OUT / lang / f"s_{w['id']}.mp3", w["sound"][lang], voice, SOUND_PROSODY
 
 
-async def generate(sem, path, text, voice, failures):
+async def generate(sem, path, text, voice, prosody, failures):
     if path.exists() and path.stat().st_size > 0:
         return "skipped"
     async with sem:
         last = None
         for attempt in range(RETRIES):
             try:
-                await edge_tts.Communicate(text, voice, rate=RATE).save(str(path))
+                await edge_tts.Communicate(text, voice, **prosody).save(str(path))
                 print(f"ok   {path.relative_to(ROOT).as_posix()}  <- {text}")
                 return "made"
             except Exception as exc:  # noqa: BLE001 - report and retry

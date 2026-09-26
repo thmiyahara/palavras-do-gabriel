@@ -85,6 +85,19 @@ export function setLevel(next: LevelChoice): void {
   emit();
 }
 
+// ---------- silly mode (chipmunk voice, wobbly cards) ----------
+const SILLY_KEY = 'pg.silly';
+let silly = readPref(SILLY_KEY) === '1';
+
+export const isSilly = (): boolean => silly;
+
+export function setSilly(on: boolean): void {
+  if (on === silly) return;
+  silly = on;
+  writePref(SILLY_KEY, on ? '1' : '0');
+  emit();
+}
+
 // ---------- category + quiz progress ----------
 export const getCategory = (): string => readPref(CAT_KEY) ?? 'animals';
 export const setCategory = (id: string): void => writePref(CAT_KEY, id);

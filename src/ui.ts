@@ -4,8 +4,10 @@ import {
   getLang,
   getLevel,
   getProgress,
+  isSilly,
   setLang,
   setLevel,
+  setSilly,
   uiLang,
   type Lang,
   type LangChoice,
@@ -53,6 +55,7 @@ const T = {
   language: { pt: 'Idioma', en: 'Language', ja: 'ことば' },
   level: { pt: 'Nível', en: 'Level', ja: 'レベル' },
   allLevels: { pt: 'Todos', en: 'All', ja: 'ぜんぶ' },
+  silly: { pt: 'Modo bobo', en: 'Silly mode', ja: 'おふざけモード' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];
@@ -90,6 +93,22 @@ export function langSwitcher(): HTMLElement {
         flagNode(c),
       ),
     ),
+  );
+}
+
+/** 🤪 toggle: chipmunk voice + wobbly cards. */
+export function sillyToggle(): HTMLElement {
+  return h(
+    'button',
+    {
+      class: 'silly-btn',
+      type: 'button',
+      title: t('silly'),
+      'aria-label': t('silly'),
+      'aria-pressed': String(isSilly()),
+      onclick: () => setSilly(!isSilly()),
+    },
+    '🤪',
   );
 }
 

@@ -21,6 +21,8 @@ export interface Word {
   pt: Translation;
   en: Translation;
   ja: Translation;
+  /** Optional onomatopoeia per language ("au au!", "woof woof!", "ワンワン！"). */
+  sound?: Record<Lang, string>;
 }
 
 export interface Category {
@@ -57,8 +59,10 @@ const BASE = import.meta.env.BASE_URL;
 
 export const imgUrl = (id: string): string => `${BASE}img/${id}.png`;
 
-export const audioUrl = (lang: Lang, id: string, kind: 'w' | 'q' = 'w'): string =>
-  `${BASE}audio/${lang}/${kind === 'q' ? 'q_' : ''}${id}.mp3`;
+const PREFIX = { w: '', q: 'q_', s: 's_' } as const;
+
+export const audioUrl = (lang: Lang, id: string, kind: 'w' | 'q' | 's' = 'w'): string =>
+  `${BASE}audio/${lang}/${PREFIX[kind]}${id}.mp3`;
 
 /** Text handed to the Web Speech fallback when an MP3 cannot be played. */
 export const speechText = (w: Word, lang: Lang, kind: 'w' | 'q' = 'w'): string =>

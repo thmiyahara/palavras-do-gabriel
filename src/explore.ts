@@ -1,7 +1,7 @@
 // Explore screen: pick a level and a category, tap a picture, hear the word.
 import * as audio from './audio';
 import * as fx from './fx';
-import { getCategory, getLang, getLevel, setCategory, type Lang } from './settings';
+import { getCategory, getLang, getLevel, isSilly, setCategory, type Lang } from './settings';
 import { categoryChips, h, levelSwitcher } from './ui';
 import { categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
@@ -49,9 +49,27 @@ function card(w: Word, tint: string): HTMLElement {
   );
 
   let seq = 0;
+  let taps = 0;
+  let lastTap = 0;
   el.addEventListener('click', () => {
-    fx.pop(el);
-    fx.sparkleBurst(el);
+    // Three quick taps on the same card = a surprise spin with a "boing".
+    const now = Date.now();
+    taps = now - lastTap < 700 ? taps + 1 : 1;
+    lastTap = now;
+    const silly = isSilly();
+    if (taps >= 3) {
+      taps = 0;
+      fx.spin(el);
+      fx.boing();
+      fx.sparkleBurst(el, 14, true);
+    } else if (silly) {
+      fx.sillyMove(el);
+      fx.boing();
+      fx.sparkleBurst(el, 10, true);
+    } else {
+      fx.pop(el);
+      fx.sparkleBurst(el);
+    }
     const lang = getLang();
     if (lang === 'all') {
       const mine = ++seq;

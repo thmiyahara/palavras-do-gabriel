@@ -9,6 +9,10 @@ Tem dois modos:
 
 O botão 🌐 fala as três línguas em sequência (pt → en → ja).
 
+**Sons.** Bichos e algumas coisas (carro, trem, relógio, tambor, beijo…) fazem o som depois do nome, e cada língua imita de um jeito: "au au!", "woof woof!", "ワンワン！". O campo `sound` em `data/words.json` guarda a onomatopeia por idioma.
+
+**Modo bobo 🤪.** O botão no alto deixa a voz fininha de esquilo, os cartões ficam balançando, giram, pulam e viram gelatina ao toque, com um "boing". Em qualquer modo, três toques rápidos no mesmo cartão fazem ele rodopiar.
+
 **Níveis.** Cada palavra tem um nível de dificuldade, seguindo a ordem em que as crianças costumam aprender vocabulário:
 
 - ★ **Nível 1** (até 2 anos) – primeiras palavras: mamãe, cachorro, bola, banana, olho, banho, tchau, beijo…

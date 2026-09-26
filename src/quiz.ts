@@ -1,7 +1,7 @@
 // Quiz screen: "Cadê o cachorro?" — hear a word, tap the right picture.
 import * as audio from './audio';
 import * as fx from './fx';
-import { BCP47, LANGS, addProgress, getLang, getLevel, readPref, writePref, type Lang } from './settings';
+import { BCP47, LANGS, addProgress, getLang, getLevel, isSilly, readPref, writePref, type Lang } from './settings';
 import { categoryChips, flagNode, h, levelSwitcher, t } from './ui';
 import { WORDS, categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
 
@@ -136,8 +136,13 @@ export function renderQuiz(root: HTMLElement): () => void {
       locked = true;
       streak++;
       if (level !== 'all') addProgress(level);
-      fx.pop(el);
-      fx.sparkleBurst(el, 14);
+      if (isSilly()) {
+        fx.sillyMove(el);
+        fx.boing();
+      } else {
+        fx.pop(el);
+      }
+      fx.sparkleBurst(el, 14, isSilly());
       el.classList.add('glow');
       dimOthers(tid);
       void audio.playWord(tid, roundLang);

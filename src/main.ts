@@ -3,8 +3,8 @@ import { registerSW } from 'virtual:pwa-register';
 import * as audio from './audio';
 import { renderExplore } from './explore';
 import { renderQuiz } from './quiz';
-import { onSettingsChange } from './settings';
-import { h, langSwitcher, t } from './ui';
+import { isSilly, onSettingsChange } from './settings';
+import { h, langSwitcher, sillyToggle, t } from './ui';
 
 registerSW({ immediate: true });
 
@@ -33,13 +33,14 @@ function renderHeader(route: Route): void {
     );
   header.replaceChildren(
     h('nav', { class: 'tabs' }, tab('explore', '🧸', t('explore')), tab('quiz', '🎯', t('quiz'))),
-    langSwitcher(),
+    h('div', { class: 'controls' }, langSwitcher(), sillyToggle()),
   );
 }
 
 function render(): void {
   dispose?.();
   dispose = null;
+  document.body.classList.toggle('silly', isSilly());
   const route = routeOf();
   renderHeader(route);
   dispose = route === 'quiz' ? renderQuiz(screen) : renderExplore(screen);
