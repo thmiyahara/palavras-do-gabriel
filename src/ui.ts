@@ -61,6 +61,13 @@ const T = {
   name: { pt: 'Nome', en: 'Name', ja: 'なまえ' },
   sound: { pt: 'Som', en: 'Sound', ja: 'おと' },
   whichSound: { pt: 'Quem faz esse som?', en: 'Who makes this sound?', ja: 'このおとはだれ？' },
+  photos: { pt: 'Fotos', en: 'Photos', ja: 'しゃしん' },
+  photosHint: {
+    pt: 'Toque numa pessoa para escolher a foto dela. As fotos ficam só neste aparelho.',
+    en: 'Tap a person to choose their photo. Photos stay on this device only.',
+    ja: 'ひとをタップしてしゃしんをえらんでね。しゃしんはこのたんまつにだけほぞんされます。',
+  },
+  removePhoto: { pt: 'Tirar foto', en: 'Remove photo', ja: 'しゃしんをけす' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];

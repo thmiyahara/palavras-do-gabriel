@@ -2,8 +2,9 @@
 import * as audio from './audio';
 import * as fx from './fx';
 import { BCP47, LANGS, addProgress, getLang, getLevel, getMode, isSilly, readPref, writePref, type Lang } from './settings';
+import { pictureOf } from './explore';
 import { categoryChips, flagNode, h, levelSwitcher, t } from './ui';
-import { WORDS, categoriesFor, categoryOf, imgUrl, wordsFor, type Word } from './words';
+import { WORDS, categoriesFor, categoryOf, wordsFor, type Word } from './words';
 
 const CAT_KEY = 'pg.quizcat';
 const STARS = 5;
@@ -125,7 +126,7 @@ export function renderQuiz(root: HTMLElement): () => void {
         'aria-label': w[roundLang].w,
         style: { '--tint': categoryOf(w.cat)?.tint ?? '#ffffff' },
       },
-      h('img', { src: imgUrl(w.id), alt: '', draggable: 'false' }),
+      pictureOf(w),
     );
     el.addEventListener('click', () => answer(w, el));
     return el;
