@@ -15,7 +15,7 @@ export interface Translation {
 export interface Word {
   id: string;
   cat: string;
-  /** 1 = first words, 2 = everyday world, 3 = harder / more abstract. */
+  /** 1 = first words (≤ 2 y), 2 = 2–3 y, 3 = 3–4 y, 4 = 4–5 y. */
   level: Level;
   emoji: string;
   pt: Translation;

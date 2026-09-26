@@ -2,12 +2,13 @@ export type Lang = 'pt' | 'en' | 'ja';
 /** What the language switcher offers: one language, or all three in sequence. */
 export type LangChoice = Lang | 'all';
 
-export type Level = 1 | 2 | 3;
+/** 1 = first words (≤ 2 y), 2 = 2–3 y, 3 = 3–4 y, 4 = 4–5 y. */
+export type Level = 1 | 2 | 3 | 4;
 /** What the level switcher offers: one level, or every word. */
 export type LevelChoice = Level | 'all';
 
 export const LANGS: readonly Lang[] = ['pt', 'en', 'ja'];
-export const LEVELS: readonly Level[] = [1, 2, 3];
+export const LEVELS: readonly Level[] = [1, 2, 3, 4];
 export const BCP47: Record<Lang, string> = { pt: 'pt-BR', en: 'en-US', ja: 'ja-JP' };
 
 /** Correct quiz answers at a level needed to earn its medal. */
@@ -70,7 +71,7 @@ export const uiLang = (): Lang => (lang === 'all' ? 'pt' : lang);
 function parseLevel(v: string | null): LevelChoice {
   if (v === 'all') return 'all';
   const n = Number(v);
-  return n === 1 || n === 2 || n === 3 ? n : 1;
+  return n === 1 || n === 2 || n === 3 || n === 4 ? n : 1;
 }
 
 let level: LevelChoice = parseLevel(readPref(LEVEL_KEY));

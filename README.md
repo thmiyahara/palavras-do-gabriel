@@ -4,16 +4,17 @@ Joguinho para aprender as primeiras palavras em **português, inglês e japonês
 A criança toca num desenho, o cartão faz uma animação e o app fala o nome no idioma escolhido.
 Tem dois modos:
 
-- **Explorar** – 157 palavras em 12 categorias (pessoas, animais, comida, corpo, roupas, casa, veículos, natureza, sentimentos, cores, formas, números). Tocar = ouvir a palavra.
+- **Explorar** – 271 palavras em 17 categorias (pessoas, animais, comida, corpo, roupas, casa, brinquedos, veículos, lugares, natureza, sentimentos, ações, fantasia, música, cores, formas, números). Tocar = ouvir a palavra.
 - **Quiz** – "Cadê o cachorro?" O app fala e a criança toca no desenho certo. Acertou: festa de confete e estrelinha. Errou: o cartão errado some, sem som negativo.
 
 O botão 🌐 fala as três línguas em sequência (pt → en → ja).
 
 **Níveis.** Cada palavra tem um nível de dificuldade, seguindo a ordem em que as crianças costumam aprender vocabulário:
 
-- ★ **Nível 1** – primeiras palavras (mamãe, cachorro, bola, banana, olho, banho…): o que a maioria fala até os 2 anos.
-- ★★ **Nível 2** – o mundo do dia a dia: bichos da fazenda e do zoológico, mais comidas, roupas, casa, veículos, cores básicas, 1 a 3.
-- ★★★ **Nível 3** – palavras mais raras ou abstratas: profissões, bichos exóticos, sentimentos, formas, demais cores, 4 a 10.
+- ★ **Nível 1** (até 2 anos) – primeiras palavras: mamãe, cachorro, bola, banana, olho, banho, tchau, beijo…
+- ★★ **Nível 2** (2–3 anos) – o dia a dia: bichos da fazenda, comidas comuns, roupas, casa, veículos, cores básicas, 1 a 3, correndo, dançando…
+- ★★★ **Nível 3** (3–4 anos) – zoológico, profissões, sentimentos, formas, mais cores, 4 e 5, fantasia (dragão, fada, castelo), música.
+- ★★★★ **Nível 4** (4–5 anos) – palavras mais raras ou abstratas: sereia, canguru, hospital, cambalhota, 6 a 10, zero…
 - **Todos** – tudo junto.
 
 O seletor de nível aparece no alto do Explorar e do Quiz e vale para os dois. Só as categorias que têm palavras naquele nível são mostradas. A cada 25 acertos no quiz em um nível, o botão dele ganha uma medalha 🏅.
@@ -64,7 +65,7 @@ Depois da primeira abertura online, todas as imagens e áudios ficam guardados n
 
 ## Mudar ou acrescentar palavras
 
-Toda a lista fica em `data/words.json` (palavra, pergunta do quiz, kana/kanji/romaji, nível de 1 a 3 e o nome da pasta do emoji no repositório do Fluent Emoji).
+Toda a lista fica em `data/words.json` (palavra, pergunta do quiz, kana/kanji/romaji, nível de 1 a 4 e o nome da pasta do emoji no repositório do Fluent Emoji).
 
 ```bash
 npm run fetch:emoji   # baixa os desenhos que faltam para public/img/

@@ -97,7 +97,7 @@ export function langSwitcher(): HTMLElement {
 export function levelSwitcher(): HTMLElement {
   const current = getLevel();
   const progress = getProgress();
-  const choices: LevelChoice[] = [1, 2, 3, 'all'];
+  const choices: LevelChoice[] = [1, 2, 3, 4, 'all'];
   return h(
     'div',
     { class: 'levels', role: 'group', 'aria-label': t('level') },
