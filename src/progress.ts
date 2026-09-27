@@ -1,5 +1,5 @@
 // Trail progress: what the child knows, per word and per language, with spaced review.
-// Stored in localStorage 'pg.trail' on this device.
+// Each language is its own trail (own stages, stars and sessions). Stored in localStorage 'pg.trail'.
 import { LANGS, readPref, writePref, type Lang } from './settings';
 
 const KEY = 'pg.trail';
@@ -24,28 +24,22 @@ export interface StageProgress {
 }
 
 interface TrailState {
-  targets: Lang[];
   words: Record<string, Partial<Record<Lang, Entry>>>;
-  stages: Record<string, StageProgress>;
-  sessions: number;
+  stages: Record<string, StageProgress>; // key: `${lang}:${stageId}`
+  sessions: Partial<Record<Lang, number>>;
 }
 
-function fresh(): TrailState {
-  return { targets: [...LANGS], words: {}, stages: {}, sessions: 0 };
-}
+const fresh = (): TrailState => ({ words: {}, stages: {}, sessions: {} });
 
 function load(): TrailState {
   try {
     const raw = readPref(KEY);
     if (!raw) return fresh();
-    const parsed = JSON.parse(raw) as Partial<TrailState>;
-    const targets = (parsed.targets ?? []).filter((l): l is Lang => LANGS.includes(l as Lang));
-    return {
-      targets: targets.length ? targets : [...LANGS],
-      words: parsed.words ?? {},
-      stages: parsed.stages ?? {},
-      sessions: parsed.sessions ?? 0,
-    };
+    const parsed = JSON.parse(raw) as Partial<TrailState> & { sessions?: unknown };
+    const sessions = parsed.sessions && typeof parsed.sessions === 'object' ? (parsed.sessions as TrailState['sessions']) : {};
+    // Stage keys from the old shared trail (no language prefix) are dropped.
+    const stages = Object.fromEntries(Object.entries(parsed.stages ?? {}).filter(([k]) => k.includes(':')));
+    return { words: parsed.words ?? {}, stages, sessions };
   } catch {
     return fresh();
   }
@@ -54,26 +48,10 @@ function load(): TrailState {
 let state = load();
 const save = (): void => writePref(KEY, JSON.stringify(state));
 
-// ---------- target languages (the "ladder" order) ----------
-export const getTargets = (): Lang[] => [...state.targets];
-
-export function setTargets(langs: Lang[]): void {
-  const ordered = LANGS.filter((l) => langs.includes(l));
-  if (!ordered.length) return;
-  state.targets = ordered;
-  save();
-}
-
 // ---------- per word / language ----------
 export const entry = (id: string, lang: Lang): Entry | undefined => state.words[id]?.[lang];
 
 export const isMastered = (id: string, lang: Lang): boolean => (entry(id, lang)?.streak ?? 0) >= MASTERED_AT;
-
-/** Language to ask a word in: the first target not yet mastered; when all are, any target (review). */
-export function langFor(id: string): Lang {
-  const targets = state.targets;
-  return targets.find((l) => !isMastered(id, l)) ?? targets[Math.floor(Math.random() * targets.length)];
-}
 
 export function record(id: string, lang: Lang, correct: boolean, now = Date.now()): Entry {
   const e = state.words[id]?.[lang] ?? { streak: 0, ok: 0, bad: 0, last: 0, due: 0 };
@@ -92,10 +70,10 @@ export function record(id: string, lang: Lang, correct: boolean, now = Date.now(
   return e;
 }
 
-/** Among `ids`, the words already seen whose review is due, most overdue first. */
-export function dueWords(ids: readonly string[], now = Date.now()): string[] {
+/** Among `ids`, the words already seen in `lang` whose review is due, most overdue first. */
+export function dueWords(ids: readonly string[], lang: Lang, now = Date.now()): string[] {
   return ids
-    .map((id) => ({ id, e: entry(id, langFor(id)) }))
+    .map((id) => ({ id, e: entry(id, lang) }))
     .filter((x): x is { id: string; e: Entry } => !!x.e && x.e.due <= now)
     .sort((a, b) => a.e.due - b.e.due)
     .map((x) => x.id);
@@ -104,26 +82,33 @@ export function dueWords(ids: readonly string[], now = Date.now()): string[] {
 export const masteredCount = (ids: readonly string[], lang: Lang): number =>
   ids.filter((id) => isMastered(id, lang)).length;
 
-// ---------- stages ----------
-export const stage = (id: string): StageProgress => state.stages[id] ?? { stars: 0, plays: 0 };
+// ---------- stages (per language) ----------
+const key = (lang: Lang, id: string): string => `${lang}:${id}`;
 
-export function finishStage(id: string, stars: 1 | 2 | 3): StageProgress {
-  const s = stage(id);
+export const stage = (lang: Lang, id: string): StageProgress => state.stages[key(lang, id)] ?? { stars: 0, plays: 0 };
+
+export function finishStage(lang: Lang, id: string, stars: 1 | 2 | 3): StageProgress {
+  const s = stage(lang, id);
   const next: StageProgress = { stars: Math.max(s.stars, stars) as 1 | 2 | 3, plays: s.plays + 1 };
-  state.stages[id] = next;
-  state.sessions += 1;
+  state.stages[key(lang, id)] = next;
+  state.sessions[lang] = (state.sessions[lang] ?? 0) + 1;
   save();
   return next;
 }
 
-export function countReviewSession(): void {
-  state.sessions += 1;
+export function countReviewSession(lang: Lang): void {
+  state.sessions[lang] = (state.sessions[lang] ?? 0) + 1;
   save();
 }
 
-export const sessions = (): number => state.sessions;
+export const sessions = (lang: Lang): number => state.sessions[lang] ?? 0;
 
-export function reset(): void {
-  state = { ...fresh(), targets: state.targets };
+/** Erases one language's trail (its stages and its word entries); the others are untouched. */
+export function reset(lang: Lang): void {
+  for (const k of Object.keys(state.stages)) if (k.startsWith(`${lang}:`)) delete state.stages[k];
+  for (const id of Object.keys(state.words)) delete state.words[id][lang];
+  delete state.sessions[lang];
   save();
 }
+
+export const trailLangs = (): readonly Lang[] => LANGS;

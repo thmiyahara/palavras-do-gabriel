@@ -93,9 +93,14 @@ const T = {
   trailLangs: { pt: 'Idiomas da trilha', en: 'Trail languages', ja: 'ぼうけんのことば' },
   restart: { pt: 'Recomeçar trilha', en: 'Restart trail', ja: 'さいしょから' },
   confirmRestart: {
-    pt: 'Apagar todo o progresso da trilha?',
-    en: 'Erase all trail progress?',
-    ja: 'ぼうけんのきろくをぜんぶけしますか？',
+    pt: 'Apagar o progresso desta trilha (só deste idioma)?',
+    en: 'Erase this trail (this language only)?',
+    ja: 'このことばのぼうけんのきろくをけしますか？',
+  },
+  trailIndependent: {
+    pt: 'Cada idioma tem a própria trilha. Jogar em um não muda os outros.',
+    en: 'Each language has its own trail. Playing one does not change the others.',
+    ja: 'ことばごとにべつのぼうけんです。',
   },
   settings: { pt: 'Ajustes', en: 'Settings', ja: 'せってい' },
   complete: { pt: 'Completa', en: 'Complete', ja: 'クリア' },
