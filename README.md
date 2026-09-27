@@ -15,6 +15,8 @@ O botão 🌐 fala as três línguas em sequência (pt → en → ja).
 
 **Modo bobo 🤪.** O botão no alto deixa a voz fininha de esquilo, os cartões ficam balançando, giram, pulam e viram gelatina ao toque, com um "boing". Em qualquer modo, três toques rápidos no mesmo cartão fazem ele rodopiar.
 
+**Trilha 🗺️.** A terceira aba conduz o aprendizado. As 271 palavras viram um mapa de fases (5 palavras cada, por nível e categoria). Uma sessão apresenta as palavras, treina com 8 perguntas, revisa até 3 palavras antigas que estão "vencendo" (repetição espaçada: 1 h, 1, 3, 7 e 14 dias) e dá até 3 estrelas (3 = sem erro). A fase seguinte abre com 1 estrela. Cada palavra sobe uma escada de idiomas: só passa para o próximo quando tem 3 acertos seguidos no anterior; a fase ganha uma bandeirinha por idioma dominado e um troféu quando termina todos. No ⚙️ o adulto escolhe os idiomas da trilha (e a ordem da escada é pt → en → ja) ou recomeça. O progresso fica em `localStorage` no aparelho.
+
 **Níveis.** Cada palavra tem um nível de dificuldade, seguindo a ordem em que as crianças costumam aprender vocabulário:
 
 - ★ **Nível 1** (até 2 anos) – primeiras palavras: mamãe, cachorro, bola, banana, olho, banho, tchau, beijo…

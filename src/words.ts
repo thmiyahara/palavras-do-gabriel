@@ -1,6 +1,6 @@
 import data from '../data/words.json';
 import * as people from './people';
-import type { Lang, Level, LevelChoice } from './settings';
+import { uiLang, type Lang, type Level, type LevelChoice } from './settings';
 
 export interface Translation {
   /** The word as displayed (kana for Japanese). */
@@ -50,6 +50,9 @@ export function getWord(id: string): Word {
 }
 
 export const categoryOf = (id: string): Category | undefined => CATEGORIES.find((c) => c.id === id);
+
+/** Category name in the UI language. */
+export const uiLabel = (c: Category): string => c.label[uiLang()];
 
 const atLevel = (w: Word, level: LevelChoice): boolean => level === 'all' || w.level === level || !!w.custom;
 

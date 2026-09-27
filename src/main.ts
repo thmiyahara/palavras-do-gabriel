@@ -5,6 +5,7 @@ import { renderExplore } from './explore';
 import * as people from './people';
 import * as photos from './photos';
 import { renderQuiz } from './quiz';
+import { renderTrail } from './trail';
 import { isSilly, onSettingsChange } from './settings';
 import { h, langSwitcher, modeSwitcher, sillyToggle, t } from './ui';
 
@@ -21,8 +22,8 @@ app.append(header, screen);
 // First touch anywhere wakes up the speech engines (iOS needs a gesture).
 document.addEventListener('pointerdown', () => audio.unlock(), { once: true, capture: true });
 
-type Route = 'explore' | 'quiz';
-const routeOf = (): Route => (location.hash === '#/quiz' ? 'quiz' : 'explore');
+type Route = 'explore' | 'quiz' | 'trail';
+const routeOf = (): Route => (location.hash === '#/quiz' ? 'quiz' : location.hash === '#/trail' ? 'trail' : 'explore');
 let dispose: (() => void) | null = null;
 
 function renderHeader(route: Route): void {
@@ -34,7 +35,7 @@ function renderHeader(route: Route): void {
       h('span', {}, label),
     );
   header.replaceChildren(
-    h('nav', { class: 'tabs' }, tab('explore', '🧸', t('explore')), tab('quiz', '🎯', t('quiz'))),
+    h('nav', { class: 'tabs' }, tab('explore', '🧸', t('explore')), tab('quiz', '🎯', t('quiz')), tab('trail', '🗺️', t('trail'))),
     h('div', { class: 'controls' }, langSwitcher(), modeSwitcher(), sillyToggle()),
   );
 }
@@ -45,7 +46,7 @@ function render(): void {
   document.body.classList.toggle('silly', isSilly());
   const route = routeOf();
   renderHeader(route);
-  dispose = route === 'quiz' ? renderQuiz(screen) : renderExplore(screen);
+  dispose = route === 'quiz' ? renderQuiz(screen) : route === 'trail' ? renderTrail(screen) : renderExplore(screen);
   window.scrollTo(0, 0);
 }
 

@@ -78,6 +78,28 @@ const T = {
   cancel: { pt: 'Cancelar', en: 'Cancel', ja: 'やめる' },
   delete: { pt: 'Excluir', en: 'Delete', ja: 'さくじょ' },
   needPhoto: { pt: 'Escolha um nome e uma foto.', en: 'Pick a name and a photo.', ja: 'なまえとしゃしんをえらんでね。' },
+  trail: { pt: 'Trilha', en: 'Trail', ja: 'ぼうけん' },
+  play: { pt: 'Jogar', en: 'Play', ja: 'プレイ' },
+  next: { pt: 'Próximo', en: 'Next', ja: 'つぎ' },
+  newWords: { pt: 'Palavras novas', en: 'New words', ja: 'あたらしいことば' },
+  nowPoint: { pt: 'Agora aponte!', en: 'Now point!', ja: 'どれかな？' },
+  review: { pt: 'Revisão', en: 'Review', ja: 'ふくしゅう' },
+  reviewDone: { pt: 'Revisão feita!', en: 'Review done!', ja: 'ふくしゅう おわり！' },
+  greatJob: { pt: 'Muito bem!', en: 'Great job!', ja: 'よくできました！' },
+  map: { pt: 'Mapa', en: 'Map', ja: 'マップ' },
+  again: { pt: 'Jogar de novo', en: 'Play again', ja: 'もういちど' },
+  mastered: { pt: 'Dominadas', en: 'Mastered', ja: 'おぼえた' },
+  locked: { pt: 'Termine a fase anterior primeiro', en: 'Finish the previous stage first', ja: 'まえのステージをクリアしてね' },
+  trailLangs: { pt: 'Idiomas da trilha', en: 'Trail languages', ja: 'ぼうけんのことば' },
+  restart: { pt: 'Recomeçar trilha', en: 'Restart trail', ja: 'さいしょから' },
+  confirmRestart: {
+    pt: 'Apagar todo o progresso da trilha?',
+    en: 'Erase all trail progress?',
+    ja: 'ぼうけんのきろくをぜんぶけしますか？',
+  },
+  settings: { pt: 'Ajustes', en: 'Settings', ja: 'せってい' },
+  complete: { pt: 'Completa', en: 'Complete', ja: 'クリア' },
+  stageOf: { pt: 'Fase', en: 'Stage', ja: 'ステージ' },
 } satisfies Record<string, Record<Lang, string>>;
 
 export const t = (key: keyof typeof T): string => T[key][uiLang()];
