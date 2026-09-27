@@ -40,7 +40,7 @@ export function prime(): void {
   }
 }
 
-export function speak(text: string, lang: string): Promise<void> {
+export function speak(text: string, lang: string, opts: { rate?: number; pitch?: number } = {}): Promise<void> {
   return new Promise((resolve) => {
     if (!synth) {
       resolve();
@@ -49,8 +49,8 @@ export function speak(text: string, lang: string): Promise<void> {
     if (synth.speaking || synth.pending) synth.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
-    u.rate = 0.85;
-    u.pitch = 1.1;
+    u.rate = opts.rate ?? 0.85;
+    u.pitch = opts.pitch ?? 1.1;
     const voice = pickVoice(lang);
     if (voice) u.voice = voice;
     u.onend = () => resolve();
