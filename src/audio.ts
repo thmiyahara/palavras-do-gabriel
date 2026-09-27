@@ -30,11 +30,14 @@ const SILLY_VOICES: readonly SillyVoice[] = [
   { rate: 1.45, speechRate: 1.3, speechPitch: 2 }, // fininha (esquilo)
   { rate: 0.7, speechRate: 0.7, speechPitch: 0.4 }, // grossa (gigante)
 ];
+let sillyIndex = 0;
 let sillyVoice: SillyVoice = SILLY_VOICES[0];
 
-/** Picks a silly voice for the next tap (kept for the whole word, including the 🌐 sequence). */
+/** Alternates the silly voice on every tap (kept for the whole word, including the 🌐 sequence). */
 function chooseVoice(): void {
-  if (isSilly()) sillyVoice = SILLY_VOICES[Math.floor(Math.random() * SILLY_VOICES.length)];
+  if (!isSilly()) return;
+  sillyIndex = (sillyIndex + 1) % SILLY_VOICES.length;
+  sillyVoice = SILLY_VOICES[sillyIndex];
 }
 
 function applyVoice(): void {
